@@ -44,7 +44,7 @@ class Message extends Controller
      */
     public function store(Request $request)
     {
-        //
+        return $this->messages->create($request->input());
     }
 
     /**

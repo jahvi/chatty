@@ -11,6 +11,9 @@ angular.module('chatty')
                 username: 'test',
                 message: this.message
             };
+
+            $http.post('messages', message);
+
             this.messages.push(message);
             this.message = '';
         };
