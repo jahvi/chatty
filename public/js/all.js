@@ -28904,4 +28904,18 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 /* global angular */
 angular.module('chatty', []);
+/* global angular */
+
+angular.module('chatty')
+    .controller('Chat', function() {
+        this.messages = [
+            'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
+            'Ab error doloremque distinctio similique consequatur facere'
+        ];
+
+        this.sendMessage = function() {
+            this.messages.push(this.message);
+            this.message = '';
+        };
+    });
 //# sourceMappingURL=all.js.map

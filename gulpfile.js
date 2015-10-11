@@ -16,6 +16,7 @@ elixir(function(mix) {
 
     mix.scripts([
         'node_modules/angular/angular.js',
-        'resources/assets/js/app.js'
+        'resources/assets/js/app.js',
+        'resources/assets/js/controllers/*.js'
     ], 'public/js/all.js', '.');
 });
