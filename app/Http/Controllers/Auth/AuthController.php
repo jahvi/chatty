@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace Chatty\Http\Controllers\Auth;
 
-use App\User;
+use Chatty\User;
 use Validator;
-use App\Http\Controllers\Controller;
+use Chatty\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 

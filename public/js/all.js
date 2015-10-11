@@ -28907,14 +28907,17 @@ angular.module('chatty', []);
 /* global angular */
 
 angular.module('chatty')
-    .controller('Chat', function() {
-        this.messages = [
-            'Lorem ipsum dolor sit amet, consectetur adipisicing elit',
-            'Ab error doloremque distinctio similique consequatur facere'
-        ];
+    .controller('Chat', function($http) {
+        $http.get('messages').success(function(messages) {
+            this.messages = messages;
+        }.bind(this));
 
         this.sendMessage = function() {
-            this.messages.push(this.message);
+            var message = {
+                username: 'test',
+                message: this.message
+            };
+            this.messages.push(message);
             this.message = '';
         };
     });

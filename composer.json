@@ -19,7 +19,7 @@
             "database"
         ],
         "psr-4": {
-            "App\\": "app/"
+            "Chatty\\": "app/"
         }
     },
     "autoload-dev": {

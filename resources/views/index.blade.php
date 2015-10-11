@@ -12,7 +12,10 @@
         <hr>
 
         <ul class="messages-list" ng-cloak>
-            <li ng-repeat="message in chat.messages">@{{ message }}</li>
+            <li ng-repeat="message in chat.messages">
+                <strong>@{{ message.username }}</strong>:
+                @{{ message.message }}
+            </li>
         </ul>
 
         <form ng-submit="chat.sendMessage()">

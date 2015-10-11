@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Events;
+namespace Chatty\Events;
 
 abstract class Event
 {

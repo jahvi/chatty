@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace Chatty\Jobs;
 
 use Illuminate\Bus\Queueable;
 
