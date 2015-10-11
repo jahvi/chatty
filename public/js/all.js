@@ -28907,14 +28907,16 @@ angular.module('chatty', []);
 /* global angular */
 
 angular.module('chatty')
-    .controller('Chat', function($http) {
+    .controller('Chat', function($scope, $http) {
+        this.username = '';
+
         $http.get('messages').success(function(messages) {
             this.messages = messages;
         }.bind(this));
 
         this.sendMessage = function() {
             var message = {
-                username: 'test',
+                username: this.username,
                 message: this.message
             };
 
@@ -28922,6 +28924,10 @@ angular.module('chatty')
 
             this.messages.push(message);
             this.message = '';
+        };
+
+        this.setUsername = function() {
+            this.username = this.tpmUsername;
         };
     });
 //# sourceMappingURL=all.js.map
