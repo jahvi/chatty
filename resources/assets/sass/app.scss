@@ -1,7 +1,74 @@
-$icon-font-path: '../fonts/';
-
-@import 'node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
+@import 'node_modules/semantic-ui/dist/semantic';
 
 [ng-cloak] {
     display: none;
+}
+
+.ui.grid {
+    height: 100vh;
+}
+
+.ui.header {
+    color: #360033;
+    margin-bottom: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+
+    .content {
+        padding-bottom: .5em;
+    }
+
+    > .icon {
+        padding-top: 0;
+        padding-bottom: .5em;
+    }
+}
+
+.ui.comments {
+    flex: 1;
+    max-width: none;
+    margin: 0;
+    padding: 1rem 0 1rem 1rem;
+    overflow-y: auto;
+    background: linear-gradient(#fff 30%, #fff), linear-gradient(#fff 10px, #fff 70%) bottom, radial-gradient(at top, rgba(0, 0, 0, .1), transparent 70%), radial-gradient(at bottom, rgba(0, 0, 0, .1), transparent 70%) bottom;
+    background-repeat: no-repeat;
+    background-size: 100% 20px, 100% 20px, 100% 10px, 100% 10px;
+    background-attachment: local, local, scroll, scroll;
+}
+
+.chat-column {
+    display: flex !important;
+    flex-direction: column;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.info-column {
+    color: #fff;
+    background: linear-gradient(to bottom, #360033 10%, #0b8793 90%);
+
+    p {
+        line-height: 1.5;
+    }
+
+    a {
+        color: #fff;
+    }
+}
+
+.chat-actions {
+    padding-left: 1rem;
+}
+
+.ui.blue.button {
+    background: #0b8793;
+
+    &:hover {
+        background: #0A616A;
+    }
+}
+
+.users-column {
+    background: #fcfcfc;
 }
