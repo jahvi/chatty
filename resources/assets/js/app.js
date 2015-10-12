@@ -1,2 +1,2 @@
 /* global angular */
-angular.module('chatty', ['pusher-angular', 'luegg.directives']);
+angular.module('chatty', ['pusher-angular', 'luegg.directives', 'ngStorage']);

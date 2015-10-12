@@ -63,7 +63,7 @@
                 <div class="chat-actions">
                     <form ng-hide="chat.username" ng-submit="chat.setUsername()">
                         <div class="ui fluid action input">
-                            <input placeholder="Your display name" ng-model="chat.tpmUsername" autofocus required>
+                            <input placeholder="Your display name" ng-model="chat.sessionStorage.username" autofocus required>
                             <button class="ui button">Set</button>
                         </div>
                     </form>
