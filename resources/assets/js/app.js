@@ -1,2 +1,2 @@
 /* global angular */
-angular.module('chatty', ['pusher-angular']);
+angular.module('chatty', ['pusher-angular', 'luegg.directives']);

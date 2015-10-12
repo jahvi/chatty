@@ -16,6 +16,7 @@ elixir(function(mix) {
 
     mix.scripts([
         'node_modules/angular/angular.js',
+        'node_modules/angularjs-scroll-glue/src/scrollglue.js',
         'node_modules/pusher-js/dist/pusher.js',
         'node_modules/pusher-angular/lib/pusher-angular.js',
         'resources/assets/js/app.js',

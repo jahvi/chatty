@@ -43,7 +43,7 @@
                     </div>
                 </h2>
 
-                <div class="ui comments" ng-cloak>
+                <div class="ui comments" scroll-glue ng-cloak>
                     <div class="comment" ng-repeat="message in chat.messages">
                         <div class="avatar">
                             <img src="http://placehold.it/50x50">
