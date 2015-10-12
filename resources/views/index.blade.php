@@ -40,6 +40,11 @@
         </form>
     </div>
 
+    <script>
+        var chattyConfig = {
+            PUSHER_KEY: "{{ config('broadcasting.connections.pusher.key') }}"
+        };
+    </script>
     <script src="/js/all.js"></script>
 </body>
 </html>

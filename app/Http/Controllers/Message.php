@@ -2,6 +2,8 @@
 
 namespace Chatty\Http\Controllers;
 
+use Event;
+use Chatty\Events\MessagePublished;
 use Chatty\Http\Controllers\Controller;
 use Chatty\Http\Requests;
 use Chatty\Message as MessageModel;
@@ -44,7 +46,11 @@ class Message extends Controller
      */
     public function store(Request $request)
     {
-        return $this->messages->create($request->input());
+        $message = $this->messages->create($request->input());
+
+        Event::fire(new MessagePublished($message));
+
+        return response($message, 201);
     }
 
     /**

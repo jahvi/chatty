@@ -6,6 +6,8 @@
   "dependencies": {
     "angular": "^1.4.7",
     "bootstrap-sass": "^3.0.0",
-    "laravel-elixir": "^3.0.0"
+    "laravel-elixir": "^3.0.0",
+    "pusher-angular": "^0.1.8",
+    "pusher-js": "^3.0.0"
   }
 }

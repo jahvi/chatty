@@ -1,2 +1,2 @@
 /* global angular */
-angular.module('chatty', []);
+angular.module('chatty', ['pusher-angular']);
