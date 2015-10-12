@@ -30,6 +30,6 @@ class MessagePublished extends Event implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return ['chat_channel'];
+        return ['presence-chat'];
     }
 }

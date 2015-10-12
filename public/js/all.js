@@ -33275,10 +33275,22 @@ angular.module('chatty')
             this.messages = messages;
         }.bind(this));
 
-        var channel = channelManager.subscribe('chat_channel');
+        var channel = channelManager.subscribe('presence-chat');
 
         channel.bind('Chatty\\Events\\MessagePublished', function(response) {
             this.messages.push(response.message);
+        }.bind(this));
+
+        channel.bind('pusher:subscription_succeeded', function(members) {
+            this.memberCount = members.count;
+        }.bind(this));
+
+        channel.bind('pusher:member_added', function() {
+            this.memberCount += 1;
+        }.bind(this));
+
+        channel.bind('pusher:member_removed', function() {
+            this.memberCount -= 1;
         }.bind(this));
 
         this.sendMessage = function() {
@@ -33305,7 +33317,12 @@ angular.module('chatty')
         return {
             subscribe: function (channelName) {
                 var client = new Pusher(chattyConfig.PUSHER_KEY, {
-                    encrypted: true
+                    encrypted: true,
+                    auth: {
+                        headers: {
+                            'X-CSRF-Token': chattyConfig.token
+                        }
+                    }
                 });
 
                 var pusher = $pusher(client);

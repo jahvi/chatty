@@ -7,11 +7,14 @@
 </head>
 <body>
     <div class="container" ng-controller="Chat as chat">
-        <h1>Chatty</h1>
+        <h1>
+            Chatty
+            <small ng-show="chat.memberCount" ng-cloak>Members: @{{ chat.memberCount }}</small>
+        </h1>
 
         <hr>
 
-        <ul class="messages-list" ng-cloak>
+        <ul class="messages-list list-unstyled" ng-cloak>
             <li ng-repeat="message in chat.messages">
                 <strong>@{{ message.username }}</strong>:
                 @{{ message.message }}
@@ -42,6 +45,7 @@
 
     <script>
         var chattyConfig = {
+            token: "{{ csrf_token() }}",
             PUSHER_KEY: "{{ config('broadcasting.connections.pusher.key') }}"
         };
     </script>

@@ -7,7 +7,12 @@ angular.module('chatty')
         return {
             subscribe: function (channelName) {
                 var client = new Pusher(chattyConfig.PUSHER_KEY, {
-                    encrypted: true
+                    encrypted: true,
+                    auth: {
+                        headers: {
+                            'X-CSRF-Token': chattyConfig.token
+                        }
+                    }
                 });
 
                 var pusher = $pusher(client);
