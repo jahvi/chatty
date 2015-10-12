@@ -1,9 +1,11 @@
 /* global angular */
 
 angular.module('chatty')
-    .controller('Chat', function($scope, $http, $sessionStorage, channelManager) {
+    .controller('Chat', function($scope, $http, $sessionStorage, channelManager, focus) {
         this.sessionStorage = $sessionStorage;
         this.username = $sessionStorage.username;
+
+        focus('messageReady');
 
         $http.get('messages').success(function(messages) {
             this.messages = messages;
@@ -40,5 +42,6 @@ angular.module('chatty')
 
         this.setUsername = function() {
             this.username = $sessionStorage.username;
+            focus('messageReady');
         };
     });

@@ -73,7 +73,7 @@
                             <div class="ui label">
                                 @{{ chat.username }} says:
                             </div>
-                            <input placeholder="Message" ng-model="chat.message" required>
+                            <input placeholder="Message" ng-model="chat.message" required focus-on="messageReady">
                             <button class="blue ui button">Send</button>
                         </div>
                     </form>
