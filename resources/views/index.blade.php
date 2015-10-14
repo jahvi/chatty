@@ -24,7 +24,7 @@
                     </div>
                     <div class="item">
                         <div class="content">
-                            <a href="#"><i class="github icon"></i> GitHub</a>
+                            <a href="https://github.com/jahvi/chatty"><i class="github icon"></i> GitHub</a>
                         </div>
                     </div>
                 </div>
