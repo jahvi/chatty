@@ -51,7 +51,7 @@
                         <div class="content">
                             <span class="author">@{{ message.username }}</span>
                             <div class="metadata">
-                                <div class="date">1 day ago</div>
+                                <div class="date" am-time-ago="message.created_at | amUtc | amLocal"></div>
                             </div>
                             <div class="text">
                                 <p>@{{ message.message }}</p>
