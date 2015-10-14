@@ -2,7 +2,7 @@
 <html ng-app="chatty">
 <head>
     <meta charset="utf-8">
-    <title>Chatty | A simple chat app using Laravel, Pusher and AngularJS</title>
+    <title>Chatty | A simple chat app build with Laravel, Pusher and AngularJS</title>
     <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
