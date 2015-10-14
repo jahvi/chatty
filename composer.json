@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "name": "jahvi/chatty",
+    "description": "A simple chat app using Laravel, Pusher and AngularJS",
+    "keywords": ["framework", "laravel", "chat", "pusher", "angular"],
     "license": "MIT",
     "type": "project",
     "require": {
