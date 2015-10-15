@@ -32097,6 +32097,306 @@ $provide.value("$locale", {
     return _moment;
 
 }));
+/**
+* A handy class to calculate color values.
+*
+* @version 1.0
+* @author Robert Eisele <robert@xarg.org>
+* @copyright Copyright (c) 2010, Robert Eisele
+* @link http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
+* @license http://www.opensource.org/licenses/bsd-license.php BSD License
+*
+*/
+
+(function() {
+
+	// helper functions for that ctx
+	function write(buffer, offs) {
+		for (var i = 2; i < arguments.length; i++) {
+			for (var j = 0; j < arguments[i].length; j++) {
+				buffer[offs++] = arguments[i].charAt(j);
+			}
+		}
+	}
+
+	function byte2(w) {
+		return String.fromCharCode((w >> 8) & 255, w & 255);
+	}
+
+	function byte4(w) {
+		return String.fromCharCode((w >> 24) & 255, (w >> 16) & 255, (w >> 8) & 255, w & 255);
+	}
+
+	function byte2lsb(w) {
+		return String.fromCharCode(w & 255, (w >> 8) & 255);
+	}
+
+	window.PNGlib = function(width,height,depth) {
+
+		this.width   = width;
+		this.height  = height;
+		this.depth   = depth;
+
+		// pixel data and row filter identifier size
+		this.pix_size = height * (width + 1);
+
+		// deflate header, pix_size, block headers, adler32 checksum
+		this.data_size = 2 + this.pix_size + 5 * Math.floor((0xfffe + this.pix_size) / 0xffff) + 4;
+
+		// offsets and sizes of Png chunks
+		this.ihdr_offs = 0;									// IHDR offset and size
+		this.ihdr_size = 4 + 4 + 13 + 4;
+		this.plte_offs = this.ihdr_offs + this.ihdr_size;	// PLTE offset and size
+		this.plte_size = 4 + 4 + 3 * depth + 4;
+		this.trns_offs = this.plte_offs + this.plte_size;	// tRNS offset and size
+		this.trns_size = 4 + 4 + depth + 4;
+		this.idat_offs = this.trns_offs + this.trns_size;	// IDAT offset and size
+		this.idat_size = 4 + 4 + this.data_size + 4;
+		this.iend_offs = this.idat_offs + this.idat_size;	// IEND offset and size
+		this.iend_size = 4 + 4 + 4;
+		this.buffer_size  = this.iend_offs + this.iend_size;	// total PNG size
+
+		this.buffer  = new Array();
+		this.palette = new Object();
+		this.pindex  = 0;
+
+		var _crc32 = new Array();
+
+		// initialize buffer with zero bytes
+		for (var i = 0; i < this.buffer_size; i++) {
+			this.buffer[i] = "\x00";
+		}
+
+		// initialize non-zero elements
+		write(this.buffer, this.ihdr_offs, byte4(this.ihdr_size - 12), 'IHDR', byte4(width), byte4(height), "\x08\x03");
+		write(this.buffer, this.plte_offs, byte4(this.plte_size - 12), 'PLTE');
+		write(this.buffer, this.trns_offs, byte4(this.trns_size - 12), 'tRNS');
+		write(this.buffer, this.idat_offs, byte4(this.idat_size - 12), 'IDAT');
+		write(this.buffer, this.iend_offs, byte4(this.iend_size - 12), 'IEND');
+
+		// initialize deflate header
+		var header = ((8 + (7 << 4)) << 8) | (3 << 6);
+		header+= 31 - (header % 31);
+
+		write(this.buffer, this.idat_offs + 8, byte2(header));
+
+		// initialize deflate block headers
+		for (var i = 0; (i << 16) - 1 < this.pix_size; i++) {
+			var size, bits;
+			if (i + 0xffff < this.pix_size) {
+				size = 0xffff;
+				bits = "\x00";
+			} else {
+				size = this.pix_size - (i << 16) - i;
+				bits = "\x01";
+			}
+			write(this.buffer, this.idat_offs + 8 + 2 + (i << 16) + (i << 2), bits, byte2lsb(size), byte2lsb(~size));
+		}
+
+		/* Create crc32 lookup table */
+		for (var i = 0; i < 256; i++) {
+			var c = i;
+			for (var j = 0; j < 8; j++) {
+				if (c & 1) {
+					c = -306674912 ^ ((c >> 1) & 0x7fffffff);
+				} else {
+					c = (c >> 1) & 0x7fffffff;
+				}
+			}
+			_crc32[i] = c;
+		}
+
+		// compute the index into a png for a given pixel
+		this.index = function(x,y) {
+			var i = y * (this.width + 1) + x + 1;
+			var j = this.idat_offs + 8 + 2 + 5 * Math.floor((i / 0xffff) + 1) + i;
+			return j;
+		}
+
+		// convert a color and build up the palette
+		this.color = function(red, green, blue, alpha) {
+
+			alpha = alpha >= 0 ? alpha : 255;
+			var color = (((((alpha << 8) | red) << 8) | green) << 8) | blue;
+
+			if (typeof this.palette[color] == "undefined") {
+				if (this.pindex == this.depth) return "\x00";
+
+				var ndx = this.plte_offs + 8 + 3 * this.pindex;
+
+				this.buffer[ndx + 0] = String.fromCharCode(red);
+				this.buffer[ndx + 1] = String.fromCharCode(green);
+				this.buffer[ndx + 2] = String.fromCharCode(blue);
+				this.buffer[this.trns_offs+8+this.pindex] = String.fromCharCode(alpha);
+
+				this.palette[color] = String.fromCharCode(this.pindex++);
+			}
+			return this.palette[color];
+		}
+
+		// output a PNG string, Base64 encoded
+		this.getBase64 = function() {
+
+			var s = this.getDump();
+
+			var ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+			var c1, c2, c3, e1, e2, e3, e4;
+			var l = s.length;
+			var i = 0;
+			var r = "";
+
+			do {
+				c1 = s.charCodeAt(i);
+				e1 = c1 >> 2;
+				c2 = s.charCodeAt(i+1);
+				e2 = ((c1 & 3) << 4) | (c2 >> 4);
+				c3 = s.charCodeAt(i+2);
+				if (l < i+2) { e3 = 64; } else { e3 = ((c2 & 0xf) << 2) | (c3 >> 6); }
+				if (l < i+3) { e4 = 64; } else { e4 = c3 & 0x3f; }
+				r+= ch.charAt(e1) + ch.charAt(e2) + ch.charAt(e3) + ch.charAt(e4);
+			} while ((i+= 3) < l);
+			return r;
+		}
+
+		// output a PNG string
+		this.getDump = function() {
+
+			// compute adler32 of output pixels + row filter bytes
+			var BASE = 65521; /* largest prime smaller than 65536 */
+			var NMAX = 5552;  /* NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
+			var s1 = 1;
+			var s2 = 0;
+			var n = NMAX;
+
+			for (var y = 0; y < this.height; y++) {
+				for (var x = -1; x < this.width; x++) {
+					s1+= this.buffer[this.index(x, y)].charCodeAt(0);
+					s2+= s1;
+					if ((n-= 1) == 0) {
+						s1%= BASE;
+						s2%= BASE;
+						n = NMAX;
+					}
+				}
+			}
+			s1%= BASE;
+			s2%= BASE;
+			write(this.buffer, this.idat_offs + this.idat_size - 8, byte4((s2 << 16) | s1));
+
+			// compute crc32 of the PNG chunks
+			function crc32(png, offs, size) {
+				var crc = -1;
+				for (var i = 4; i < size-4; i += 1) {
+					crc = _crc32[(crc ^ png[offs+i].charCodeAt(0)) & 0xff] ^ ((crc >> 8) & 0x00ffffff);
+				}
+				write(png, offs+size-4, byte4(crc ^ -1));
+			}
+
+			crc32(this.buffer, this.ihdr_offs, this.ihdr_size);
+			crc32(this.buffer, this.plte_offs, this.plte_size);
+			crc32(this.buffer, this.trns_offs, this.trns_size);
+			crc32(this.buffer, this.idat_offs, this.idat_size);
+			crc32(this.buffer, this.iend_offs, this.iend_size);
+
+			// convert PNG to string
+			return "\211PNG\r\n\032\n"+this.buffer.join('');
+		}
+	}
+
+})();
+
+/**
+ * Identicon.js v1.0
+ * http://github.com/stewartlord/identicon.js
+ *
+ * Requires PNGLib
+ * http://www.xarg.org/download/pnglib.js
+ *
+ * Copyright 2013, Stewart Lord
+ * Released under the BSD license
+ * http://www.opensource.org/licenses/bsd-license.php
+ */
+
+(function() {
+    Identicon = function(hash, size, margin){
+        this.hash   = hash;
+        this.size   = size   || 64;
+        this.margin = margin || .08;
+    }
+
+    Identicon.prototype = {
+        hash:   null,
+        size:   null,
+        margin: null,
+
+        render: function(){
+            var hash    = this.hash,
+                size    = this.size,
+                margin  = Math.floor(size * this.margin),
+                cell    = Math.floor((size - (margin * 2)) / 5),
+                image   = new PNGlib(size, size, 256);
+
+            // light-grey background
+            var bg      = image.color(240, 240, 240);
+
+            // foreground is last 7 chars as hue at 50% saturation, 70% brightness
+            var rgb     = this.hsl2rgb(parseInt(hash.substr(-7), 16) / 0xfffffff, .5, .7),
+                fg      = image.color(rgb[0] * 255, rgb[1] * 255, rgb[2] * 255);
+
+            // the first 15 characters of the hash control the pixels (even/odd)
+            // they are drawn down the middle first, then mirrored outwards
+            var i, color;
+            for (i = 0; i < 15; i++) {
+                color = parseInt(hash.charAt(i), 16) % 2 ? bg : fg;
+                if (i < 5) {
+                    this.rectangle(2 * cell + margin, i * cell + margin, cell, cell, color, image);
+                } else if (i < 10) {
+                    this.rectangle(1 * cell + margin, (i - 5) * cell + margin, cell, cell, color, image);
+                    this.rectangle(3 * cell + margin, (i - 5) * cell + margin, cell, cell, color, image);
+                } else if (i < 15) {
+                    this.rectangle(0 * cell + margin, (i - 10) * cell + margin, cell, cell, color, image);
+                    this.rectangle(4 * cell + margin, (i - 10) * cell + margin, cell, cell, color, image);
+                }
+            }
+
+            return image;
+        },
+
+        rectangle: function(x, y, w, h, color, image) {
+            var i, j;
+            for (i = x; i < x + w; i++) {
+                for (j = y; j < y + h; j++) {
+                    image.buffer[image.index(i, j)] = color;
+                }
+            }
+        },
+
+        // adapted from: https://gist.github.com/aemkei/1325937
+        hsl2rgb: function(h, s, b){
+            h *= 6;
+            s = [
+                b += s *= b < .5 ? b : 1 - b,
+                b - h % 1 * s * 2,
+                b -= s *= 2,
+                b,
+                b + h % 1 * s,
+                b + s
+            ];
+
+            return[
+                s[ ~~h    % 6 ],  // red
+                s[ (h|16) % 6 ],  // green
+                s[ (h|8)  % 6 ]   // blue
+            ];
+        },
+
+        toString: function(){
+            return this.render().getBase64();
+        }
+    }
+
+    window.Identicon = Identicon;
+})();
 /*!
  * Pusher JavaScript Library v3.0.0
  * http://pusher.com/
@@ -37499,8 +37799,258 @@ angular.module('pusher-angular', [])
 	}
 })();
 
+/**
+ * @ngdoc directive
+ * @name contactIcon
+ *
+ * @description
+ * _Please update the description and restriction._
+ *
+ * @restrict A
+ * */
+angular.module('ui.identicon', [])
+    .directive('identicon', function () {
+        return {
+            restrict: 'E',
+            replace: true,
+            scope: {
+                username: '=',
+                size: '='
+            },
+            template: '<img width={{size}} height={{size}} ng-src="data:image/png;base64,{{data}}">',
+            controller: ["$scope", "md5", function ($scope, md5) {
+                $scope.size = (typeof($scope.size) !== 'undefined' ? $scope.size : 24);
+
+                $scope.$watchGroup(['username', 'size'], function (newVal) {
+                    $scope.data = new Identicon(md5.createHash($scope.username || ''), $scope.size).toString();
+                });
+            }]
+        };
+    });
+
+'use strict';
+// copied and embedded from https://github.com/gdi2290/angular-md5/blob/master/lib/services/md5.js
+angular.module('ui.identicon')
+    .factory('md5', [function() {
+
+        var md5 = {
+            createHash: function(str) {
+
+                var xl;
+
+                var rotateLeft = function (lValue, iShiftBits) {
+                    return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
+                };
+
+                var addUnsigned = function (lX, lY) {
+                    var lX4, lY4, lX8, lY8, lResult;
+                    lX8 = (lX & 0x80000000);
+                    lY8 = (lY & 0x80000000);
+                    lX4 = (lX & 0x40000000);
+                    lY4 = (lY & 0x40000000);
+                    lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+                    if (lX4 & lY4) {
+                        return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
+                    }
+                    if (lX4 | lY4) {
+                        if (lResult & 0x40000000) {
+                            return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
+                        } else {
+                            return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
+                        }
+                    } else {
+                        return (lResult ^ lX8 ^ lY8);
+                    }
+                };
+
+                var _F = function (x, y, z) {
+                    return (x & y) | ((~x) & z);
+                };
+                var _G = function (x, y, z) {
+                    return (x & z) | (y & (~z));
+                };
+                var _H = function (x, y, z) {
+                    return (x ^ y ^ z);
+                };
+                var _I = function (x, y, z) {
+                    return (y ^ (x | (~z)));
+                };
+
+                var _FF = function (a, b, c, d, x, s, ac) {
+                    a = addUnsigned(a, addUnsigned(addUnsigned(_F(b, c, d), x), ac));
+                    return addUnsigned(rotateLeft(a, s), b);
+                };
+
+                var _GG = function (a, b, c, d, x, s, ac) {
+                    a = addUnsigned(a, addUnsigned(addUnsigned(_G(b, c, d), x), ac));
+                    return addUnsigned(rotateLeft(a, s), b);
+                };
+
+                var _HH = function (a, b, c, d, x, s, ac) {
+                    a = addUnsigned(a, addUnsigned(addUnsigned(_H(b, c, d), x), ac));
+                    return addUnsigned(rotateLeft(a, s), b);
+                };
+
+                var _II = function (a, b, c, d, x, s, ac) {
+                    a = addUnsigned(a, addUnsigned(addUnsigned(_I(b, c, d), x), ac));
+                    return addUnsigned(rotateLeft(a, s), b);
+                };
+
+                var convertToWordArray = function (str) {
+                    var lWordCount;
+                    var lMessageLength = str.length;
+                    var lNumberOfWords_temp1 = lMessageLength + 8;
+                    var lNumberOfWords_temp2 = (lNumberOfWords_temp1 - (lNumberOfWords_temp1 % 64)) / 64;
+                    var lNumberOfWords = (lNumberOfWords_temp2 + 1) * 16;
+                    var lWordArray = new Array(lNumberOfWords - 1);
+                    var lBytePosition = 0;
+                    var lByteCount = 0;
+                    while (lByteCount < lMessageLength) {
+                        lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+                        lBytePosition = (lByteCount % 4) * 8;
+                        lWordArray[lWordCount] = (lWordArray[lWordCount] | (str.charCodeAt(lByteCount) << lBytePosition));
+                        lByteCount++;
+                    }
+                    lWordCount = (lByteCount - (lByteCount % 4)) / 4;
+                    lBytePosition = (lByteCount % 4) * 8;
+                    lWordArray[lWordCount] = lWordArray[lWordCount] | (0x80 << lBytePosition);
+                    lWordArray[lNumberOfWords - 2] = lMessageLength << 3;
+                    lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
+                    return lWordArray;
+                };
+
+                var wordToHex = function (lValue) {
+                    var wordToHexValue = '',
+                        wordToHexValue_temp = '',
+                        lByte, lCount;
+                    for (lCount = 0; lCount <= 3; lCount++) {
+                        lByte = (lValue >>> (lCount * 8)) & 255;
+                        wordToHexValue_temp = '0' + lByte.toString(16);
+                        wordToHexValue = wordToHexValue + wordToHexValue_temp.substr(wordToHexValue_temp.length - 2, 2);
+                    }
+                    return wordToHexValue;
+                };
+
+                var x = [],
+                    k, AA, BB, CC, DD, a, b, c, d, S11 = 7,
+                    S12 = 12,
+                    S13 = 17,
+                    S14 = 22,
+                    S21 = 5,
+                    S22 = 9,
+                    S23 = 14,
+                    S24 = 20,
+                    S31 = 4,
+                    S32 = 11,
+                    S33 = 16,
+                    S34 = 23,
+                    S41 = 6,
+                    S42 = 10,
+                    S43 = 15,
+                    S44 = 21;
+
+                //str = this.utf8_encode(str);
+                x = convertToWordArray(str);
+                a = 0x67452301;
+                b = 0xEFCDAB89;
+                c = 0x98BADCFE;
+                d = 0x10325476;
+
+                xl = x.length;
+                for (k = 0; k < xl; k += 16) {
+                    AA = a;
+                    BB = b;
+                    CC = c;
+                    DD = d;
+                    a = _FF(a, b, c, d, x[k + 0], S11, 0xD76AA478);
+                    d = _FF(d, a, b, c, x[k + 1], S12, 0xE8C7B756);
+                    c = _FF(c, d, a, b, x[k + 2], S13, 0x242070DB);
+                    b = _FF(b, c, d, a, x[k + 3], S14, 0xC1BDCEEE);
+                    a = _FF(a, b, c, d, x[k + 4], S11, 0xF57C0FAF);
+                    d = _FF(d, a, b, c, x[k + 5], S12, 0x4787C62A);
+                    c = _FF(c, d, a, b, x[k + 6], S13, 0xA8304613);
+                    b = _FF(b, c, d, a, x[k + 7], S14, 0xFD469501);
+                    a = _FF(a, b, c, d, x[k + 8], S11, 0x698098D8);
+                    d = _FF(d, a, b, c, x[k + 9], S12, 0x8B44F7AF);
+                    c = _FF(c, d, a, b, x[k + 10], S13, 0xFFFF5BB1);
+                    b = _FF(b, c, d, a, x[k + 11], S14, 0x895CD7BE);
+                    a = _FF(a, b, c, d, x[k + 12], S11, 0x6B901122);
+                    d = _FF(d, a, b, c, x[k + 13], S12, 0xFD987193);
+                    c = _FF(c, d, a, b, x[k + 14], S13, 0xA679438E);
+                    b = _FF(b, c, d, a, x[k + 15], S14, 0x49B40821);
+                    a = _GG(a, b, c, d, x[k + 1], S21, 0xF61E2562);
+                    d = _GG(d, a, b, c, x[k + 6], S22, 0xC040B340);
+                    c = _GG(c, d, a, b, x[k + 11], S23, 0x265E5A51);
+                    b = _GG(b, c, d, a, x[k + 0], S24, 0xE9B6C7AA);
+                    a = _GG(a, b, c, d, x[k + 5], S21, 0xD62F105D);
+                    d = _GG(d, a, b, c, x[k + 10], S22, 0x2441453);
+                    c = _GG(c, d, a, b, x[k + 15], S23, 0xD8A1E681);
+                    b = _GG(b, c, d, a, x[k + 4], S24, 0xE7D3FBC8);
+                    a = _GG(a, b, c, d, x[k + 9], S21, 0x21E1CDE6);
+                    d = _GG(d, a, b, c, x[k + 14], S22, 0xC33707D6);
+                    c = _GG(c, d, a, b, x[k + 3], S23, 0xF4D50D87);
+                    b = _GG(b, c, d, a, x[k + 8], S24, 0x455A14ED);
+                    a = _GG(a, b, c, d, x[k + 13], S21, 0xA9E3E905);
+                    d = _GG(d, a, b, c, x[k + 2], S22, 0xFCEFA3F8);
+                    c = _GG(c, d, a, b, x[k + 7], S23, 0x676F02D9);
+                    b = _GG(b, c, d, a, x[k + 12], S24, 0x8D2A4C8A);
+                    a = _HH(a, b, c, d, x[k + 5], S31, 0xFFFA3942);
+                    d = _HH(d, a, b, c, x[k + 8], S32, 0x8771F681);
+                    c = _HH(c, d, a, b, x[k + 11], S33, 0x6D9D6122);
+                    b = _HH(b, c, d, a, x[k + 14], S34, 0xFDE5380C);
+                    a = _HH(a, b, c, d, x[k + 1], S31, 0xA4BEEA44);
+                    d = _HH(d, a, b, c, x[k + 4], S32, 0x4BDECFA9);
+                    c = _HH(c, d, a, b, x[k + 7], S33, 0xF6BB4B60);
+                    b = _HH(b, c, d, a, x[k + 10], S34, 0xBEBFBC70);
+                    a = _HH(a, b, c, d, x[k + 13], S31, 0x289B7EC6);
+                    d = _HH(d, a, b, c, x[k + 0], S32, 0xEAA127FA);
+                    c = _HH(c, d, a, b, x[k + 3], S33, 0xD4EF3085);
+                    b = _HH(b, c, d, a, x[k + 6], S34, 0x4881D05);
+                    a = _HH(a, b, c, d, x[k + 9], S31, 0xD9D4D039);
+                    d = _HH(d, a, b, c, x[k + 12], S32, 0xE6DB99E5);
+                    c = _HH(c, d, a, b, x[k + 15], S33, 0x1FA27CF8);
+                    b = _HH(b, c, d, a, x[k + 2], S34, 0xC4AC5665);
+                    a = _II(a, b, c, d, x[k + 0], S41, 0xF4292244);
+                    d = _II(d, a, b, c, x[k + 7], S42, 0x432AFF97);
+                    c = _II(c, d, a, b, x[k + 14], S43, 0xAB9423A7);
+                    b = _II(b, c, d, a, x[k + 5], S44, 0xFC93A039);
+                    a = _II(a, b, c, d, x[k + 12], S41, 0x655B59C3);
+                    d = _II(d, a, b, c, x[k + 3], S42, 0x8F0CCC92);
+                    c = _II(c, d, a, b, x[k + 10], S43, 0xFFEFF47D);
+                    b = _II(b, c, d, a, x[k + 1], S44, 0x85845DD1);
+                    a = _II(a, b, c, d, x[k + 8], S41, 0x6FA87E4F);
+                    d = _II(d, a, b, c, x[k + 15], S42, 0xFE2CE6E0);
+                    c = _II(c, d, a, b, x[k + 6], S43, 0xA3014314);
+                    b = _II(b, c, d, a, x[k + 13], S44, 0x4E0811A1);
+                    a = _II(a, b, c, d, x[k + 4], S41, 0xF7537E82);
+                    d = _II(d, a, b, c, x[k + 11], S42, 0xBD3AF235);
+                    c = _II(c, d, a, b, x[k + 2], S43, 0x2AD7D2BB);
+                    b = _II(b, c, d, a, x[k + 9], S44, 0xEB86D391);
+                    a = addUnsigned(a, AA);
+                    b = addUnsigned(b, BB);
+                    c = addUnsigned(c, CC);
+                    d = addUnsigned(d, DD);
+                }
+
+                var temp = wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
+
+                return temp.toLowerCase();
+            }
+
+        };
+
+        return md5;
+
+    }]);
 /* global angular */
-angular.module('chatty', ['pusher-angular', 'luegg.directives', 'ngStorage', 'focusOn', 'angularMoment']);
+angular.module('chatty', [
+    'pusher-angular',
+    'luegg.directives',
+    'ngStorage',
+    'focusOn',
+    'angularMoment',
+    'ui.identicon'
+]);
 /* global angular */
 
 angular.module('chatty')

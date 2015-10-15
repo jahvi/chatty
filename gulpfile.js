@@ -17,12 +17,15 @@ elixir(function(mix) {
     mix.scripts([
         'node_modules/angular/angular.js',
         'node_modules/moment/moment.js',
+        'node_modules/identicon.js/pnglib.js',
+        'node_modules/identicon.js/identicon.js',
         'node_modules/pusher-js/dist/pusher.js',
         'node_modules/angularjs-scroll-glue/src/scrollglue.js',
         'node_modules/ng-focus-on/ng-focus-on.js',
         'node_modules/ngstorage/ngStorage.js',
         'node_modules/pusher-angular/lib/pusher-angular.js',
         'node_modules/angular-moment/angular-moment.js',
+        'node_modules/angular-identicon/dist/angular-identicon.js',
         'resources/assets/js/app.js',
         'resources/assets/js/controllers/*.js',
         'resources/assets/js/services/*.js'
