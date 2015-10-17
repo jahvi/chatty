@@ -27218,6 +27218,12 @@ html.ios body {
   background-size: 100% 20px, 100% 20px, 100% 10px, 100% 10px;
   background-attachment: local, local, scroll, scroll; }
 
+.ui.input input:focus {
+  border-color: #0b8793 !important; }
+
+.ui.action.input:not([class*="left action"]) input:focus {
+  border-right-color: #0b8793 !important; }
+
 .chat-column {
   display: -webkit-flex !important;
   display: -ms-flexbox !important;
@@ -27241,7 +27247,9 @@ html.ios body {
 
 .ui.blue.button {
   background: #0b8793; }
-  .ui.blue.button:hover {
+  .ui.blue.button:hover,
+  .ui.blue.button:active,
+  .ui.blue.button:focus {
     background: #0A616A; }
 
 .users-column {

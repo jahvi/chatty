@@ -38,6 +38,14 @@
     background-attachment: local, local, scroll, scroll;
 }
 
+.ui.input input:focus {
+    border-color: #0b8793 !important;
+}
+
+.ui.action.input:not([class*="left action"]) input:focus {
+    border-right-color: #0b8793 !important;
+}
+
 .chat-column {
     display: flex !important;
     flex-direction: column;
@@ -65,7 +73,9 @@
 .ui.blue.button {
     background: #0b8793;
 
-    &:hover {
+    &:hover,
+    &:active,
+    &:focus {
         background: #0A616A;
     }
 }
