@@ -63,7 +63,7 @@
                 <div class="chat-actions">
                     <form ng-hide="chat.username" ng-submit="chat.setUsername()">
                         <div class="ui fluid action input">
-                            <input placeholder="Your display name" ng-model="chat.sessionStorage.username" autofocus required>
+                            <input placeholder="Choose your username..." ng-model="chat.sessionStorage.username" autofocus required>
                             <button class="ui button">Set</button>
                         </div>
                     </form>
@@ -73,7 +73,7 @@
                             <div class="ui label">
                                 @{{ chat.username }} says:
                             </div>
-                            <input placeholder="Message" ng-model="chat.message" required focus-on="messageReady">
+                            <input placeholder="Write your message..." ng-model="chat.message" required focus-on="messageReady">
                             <button class="blue ui button">Send</button>
                         </div>
                     </form>
