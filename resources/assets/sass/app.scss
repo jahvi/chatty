@@ -45,6 +45,21 @@
     background-attachment: local, local, scroll, scroll;
 }
 
+.ui.input.focus input::-webkit-input-placeholder,
+.ui.input input:focus::-webkit-input-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.ui.input.focus input::-moz-placeholder,
+.ui.input input:focus::-moz-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+.ui.input.focus input::-ms-input-placeholder,
+.ui.input input:focus::-ms-input-placeholder {
+  color: rgba(0, 0, 0, 0.4);
+}
+
 .ui.input input:focus {
     border-color: #0b8793 !important;
 }
