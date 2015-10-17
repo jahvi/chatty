@@ -4,7 +4,7 @@ global:
 
 build:
   exec:
-    - 'composer install --no-interaction --prefer-source'
+    - 'composer install --no-interaction --prefer-source --no-dev'
   after_exec:
     - 'composer dump-autoload --optimize'
   lib_dirs:
