@@ -4,6 +4,8 @@ A simple chat app build with Laravel, Pusher and AngularJS
 
 ![Chatty UI](http://i.imgur.com/wSTlSJk.jpg)
 
+:speech_balloon: [Live Demo](http://chatty.gopagoda.io/)
+
 ### Want to run it yourself?
 
 1. Clone repo
