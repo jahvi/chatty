@@ -31,4 +31,4 @@ web1:
   log_watch:
     laravel[error]: 'storage/logs/laravel.log'
   before_deploy:
-    - 'php artisan migrate --no-interaction'
+    - 'php artisan migrate --no-interaction --force'
