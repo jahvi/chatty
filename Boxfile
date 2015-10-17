@@ -1,15 +1,6 @@
 global:
   env:
     - APP_ENV: production
-    - APP_DEBUG: false
-    - DB_HOST: 'MAP:DATABASE1_HOST'
-    - DB_DATABASE: 'MAP:DATABASE1_NAME'
-    - DB_USERNAME: 'MAP:DATABASE1_USER'
-    - DB_PASSWORD: 'MAP:DATABASE1_PASS'
-    - CACHE_DRIVER: file
-    - SESSION_DRIVER: redis
-    - QUEUE_DRIVER: redis
-    - MAIL_DRIVER: mail
 
 build:
   exec:
