@@ -54,6 +54,7 @@
 }
 
 .chat-column {
+    height: 100vh;
     display: flex !important;
     flex-direction: column;
     padding-left: 0 !important;
@@ -88,6 +89,7 @@
 }
 
 .users-column {
+    height: 100vh;
     padding-left: 0 !important;
     padding-right: 0 !important;
     background: #fcfcfc;

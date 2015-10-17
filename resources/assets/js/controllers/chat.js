@@ -28,6 +28,8 @@ angular.module('chatty')
                 message: this.message
             };
 
+            this.messages.push(message);
+
             $http.post('messages', message);
 
             this.message = '';
@@ -55,6 +57,7 @@ angular.module('chatty')
             var channel = channelManager.subscribe('presence-chat');
 
             channel.bind('Chatty\\Events\\MessagePublished', function(response) {
+                this.messages.pop();
                 this.messages.push(response.message);
             }.bind(this));
 

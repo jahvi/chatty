@@ -27231,6 +27231,7 @@ html.ios body {
   border-right-color: #0b8793 !important; }
 
 .chat-column {
+  height: 100vh;
   display: -webkit-flex !important;
   display: -ms-flexbox !important;
   display: flex !important;
@@ -27259,6 +27260,7 @@ html.ios body {
     background: #0A616A; }
 
 .users-column {
+  height: 100vh;
   padding-left: 0 !important;
   padding-right: 0 !important;
   background: #fcfcfc; }
