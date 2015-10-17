@@ -71,5 +71,17 @@
 }
 
 .users-column {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     background: #fcfcfc;
+}
+
+.filter-input {
+    padding: .25rem 1rem;
+    min-height: 60px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.users-list {
+    padding: 1rem;
 }

@@ -1,7 +1,7 @@
 /* global angular, Pusher, chattyConfig */
 
 angular.module('chatty')
-    .factory('channelManager', function($pusher) {
+    .factory('channelManager', function($pusher, $sessionStorage) {
         var channel;
 
         return {
@@ -11,6 +11,9 @@ angular.module('chatty')
                     auth: {
                         headers: {
                             'X-CSRF-Token': chattyConfig.token
+                        },
+                        params: {
+                            username: $sessionStorage.username
                         }
                     }
                 });
@@ -20,8 +23,8 @@ angular.module('chatty')
 
                 return channel;
             },
-            getMembers: function () {
-                return channel.members;
+            getMembersCount: function () {
+                return channel.members.count;
             }
         };
     });

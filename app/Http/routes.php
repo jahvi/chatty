@@ -22,13 +22,11 @@ Route::post('pusher/auth', function (Illuminate\Http\Request $request) {
         config('broadcasting.connections.pusher.app_id')
     );
 
-    $presenceData = array('username' => 'test');
-
     return $pusher->presence_auth(
         $request->input('channel_name'),
         $request->input('socket_id'),
-        rand(1,100),
-        $presenceData
+        uniqid(),
+        ['username' => $request->input('username')]
     );
 });
 

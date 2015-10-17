@@ -81,7 +81,23 @@
             </div>
 
             <aside class="three wide column users-column">
-                <h3>TODO: User list</h3>
+                <header class="filter-input">
+                    <div class="ui fluid icon input">
+                        <input type="text" placeholder="Filter users..." ng-model="filterKeyword">
+                        <i class="search icon"></i>
+                    </div>
+                </header>
+                <div class="users-list">
+                    <h4>Online Users</h4>
+                    <div class="ui tiny middle aligned list" ng-cloak>
+                        <div class="item" ng-repeat="user in chat.users | filter: filterKeyword">
+                            <identicon username="user.username" size="24" class="ui avatar image"></identicon>
+                            <div class="content">
+                                <div class="header">@{{ user.username }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </aside>
         </div>
     </div>
