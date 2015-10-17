@@ -90,7 +90,7 @@
                 <div class="users-list">
                     <h4>Online Users</h4>
                     <div class="ui tiny middle aligned list" ng-cloak>
-                        <div class="item" ng-repeat="user in chat.users | filter: filterKeyword">
+                        <div class="item" ng-repeat="(key, user) in chat.users | filter: filterKeyword">
                             <identicon username="user.username" size="24" class="ui avatar image"></identicon>
                             <div class="content">
                                 <div class="header">@{{ user.username }}</div>

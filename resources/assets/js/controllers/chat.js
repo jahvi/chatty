@@ -60,7 +60,7 @@ angular.module('chatty')
 
             channel.bind('pusher:subscription_succeeded', function(users) {
                 this.memberCount = channelManager.getMembersCount();
-                this.addUser(users.me);
+                this.updateUsers(users.members);
             }.bind(this));
 
             channel.bind('pusher:member_added', function(user) {
@@ -75,7 +75,7 @@ angular.module('chatty')
         };
 
         /**
-         * Add user to chat room
+         * Add a single user to chat room
          *
          * @param {Object} user
          */
@@ -84,6 +84,22 @@ angular.module('chatty')
                 id: user.id,
                 username: user.info.username
             });
+        };
+
+        /**
+         * Update user list
+         *
+         * @param {Object} users
+         */
+        this.updateUsers = function(users) {
+            this.users = [];
+
+            angular.forEach(users, function(value, key) {
+                this.users.push({
+                    id: key,
+                    username: value.username
+                });
+            }.bind(this));
         };
 
         /**
