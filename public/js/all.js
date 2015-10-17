@@ -38054,7 +38054,7 @@ angular.module('chatty', [
 /* global angular */
 
 angular.module('chatty')
-    .controller('Chat', function($scope, $http, $sessionStorage, channelManager, focus) {
+    .controller('Chat', function($scope, $http, $sessionStorage, $filter, channelManager, focus) {
         this.sessionStorage = $sessionStorage;
         this.users = [];
 
@@ -38121,8 +38121,9 @@ angular.module('chatty')
                 this.addUser(user);
             }.bind(this));
 
-            channel.bind('pusher:member_removed', function() {
+            channel.bind('pusher:member_removed', function(user) {
                 this.memberCount = channelManager.getMembersCount();
+                this.removeUser(user);
             }.bind(this));
         };
 
@@ -38136,6 +38137,16 @@ angular.module('chatty')
                 id: user.id,
                 username: user.info.username
             });
+        };
+
+        /**
+         * Remove user from chat room
+         *
+         * @param  {Object} user
+         * @return {void}
+         */
+        this.removeUser = function(user) {
+            this.users = $filter('filter')(this.users, { id: '!' + user.id });
         };
     });
 /* global angular, Pusher, chattyConfig */
