@@ -1,0 +1,4 @@
+web1:
+  before_deploy:
+    - 'mkdir storage/framework/views'
+    - 'php artisan db:seed --no-interaction'
