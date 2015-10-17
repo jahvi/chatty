@@ -30,4 +30,4 @@ Route::post('pusher/auth', function (Illuminate\Http\Request $request) {
     );
 });
 
-Route::resource('messages', 'Message');
+Route::resource('messages', 'Message', ['only' => ['index', 'store']]);
