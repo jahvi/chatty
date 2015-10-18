@@ -2,12 +2,12 @@
 
 namespace Chatty\Http\Controllers;
 
-use Event;
-use Chatty\Events\MessagePublished;
-use Chatty\Http\Controllers\Controller;
 use Chatty\Http\Requests;
-use Chatty\Message as MessageModel;
 use Illuminate\Http\Request;
+use Illuminate\Events\Dispatcher;
+use Chatty\Events\MessagePublished;
+use Chatty\Message as MessageModel;
+use Chatty\Http\Controllers\Controller;
 
 class Message extends Controller
 {
@@ -34,11 +34,11 @@ class Message extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, Dispatcher $event)
     {
         $message = $this->messages->create($request->input());
 
-        Event::fire(new MessagePublished($message));
+        $event->fire(new MessagePublished($message));
 
         return response($message, 201);
     }
