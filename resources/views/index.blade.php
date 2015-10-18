@@ -2,6 +2,7 @@
 <html ng-app="chatty">
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chatty | A simple chat app build with Laravel, Pusher and AngularJS</title>
     <link rel="stylesheet" href="/css/app.css">
 </head>
