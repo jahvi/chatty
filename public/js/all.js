@@ -38081,6 +38081,7 @@ angular.module('chatty')
                 message: this.message
             };
 
+            // Update message list for author
             this.messages.push(message);
 
             $http.post('messages', message);
@@ -38110,8 +38111,10 @@ angular.module('chatty')
             var channel = channelManager.subscribe('presence-chat');
 
             channel.bind('Chatty\\Events\\MessagePublished', function(response) {
-                this.messages.pop();
-                this.messages.push(response.message);
+                // Update message list for everyone except the message author
+                if (response.message.username !== this.username) {
+                    this.messages.push(response.message);
+                }
             }.bind(this));
 
             channel.bind('pusher:subscription_succeeded', function(users) {
