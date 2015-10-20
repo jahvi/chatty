@@ -29,6 +29,7 @@ web1:
   nonpersistent_writable_dirs:
     - bootstrap/cache
     - storage/cache
+    - app/Http/Controllers
   log_watch:
     laravel[error]: 'storage/logs/laravel.log'
   before_deploy:
