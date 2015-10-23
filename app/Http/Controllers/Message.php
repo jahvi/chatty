@@ -4,10 +4,10 @@ namespace Chatty\Http\Controllers;
 
 use Chatty\Http\Requests;
 use Illuminate\Http\Request;
-use Illuminate\Events\Dispatcher;
 use Chatty\Events\MessagePublished;
 use Chatty\Message as MessageModel;
 use Chatty\Http\Controllers\Controller;
+use Illuminate\Contracts\Events\Dispatcher;
 
 class Message extends Controller
 {
