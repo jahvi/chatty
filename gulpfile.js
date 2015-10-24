@@ -14,6 +14,12 @@ var elixir = require('laravel-elixir');
 elixir(function(mix) {
     mix.sass('app.scss');
 
+    mix.babel([
+        'resources/assets/js/app.js',
+        'resources/assets/js/controllers/*.js',
+        'resources/assets/js/services/*.js'
+    ]);
+
     mix.scripts([
         'node_modules/angular/angular.js',
         'node_modules/moment/moment.js',
@@ -26,8 +32,6 @@ elixir(function(mix) {
         'node_modules/pusher-angular/lib/pusher-angular.js',
         'node_modules/angular-moment/angular-moment.js',
         'node_modules/angular-identicon/dist/angular-identicon.js',
-        'resources/assets/js/app.js',
-        'resources/assets/js/controllers/*.js',
-        'resources/assets/js/services/*.js'
+        'public/js/all.js'
     ], 'public/js/all.js', '.');
 });
