@@ -15,13 +15,7 @@ Route::get('/', function () {
     return view('index');
 });
 
-Route::post('pusher/auth', function (Illuminate\Http\Request $request) {
-    $pusher = new Pusher(
-        config('broadcasting.connections.pusher.key'),
-        config('broadcasting.connections.pusher.secret'),
-        config('broadcasting.connections.pusher.app_id')
-    );
-
+Route::post('pusher/auth', function (Illuminate\Http\Request $request, Pusher $pusher) {
     return $pusher->presence_auth(
         $request->input('channel_name'),
         $request->input('socket_id'),

@@ -144,6 +144,7 @@ return [
         Chatty\Providers\AuthServiceProvider::class,
         Chatty\Providers\EventServiceProvider::class,
         Chatty\Providers\RouteServiceProvider::class,
+        Chatty\Providers\PusherServiceProvider::class,
 
     ],
 
