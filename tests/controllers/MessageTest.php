@@ -1,4 +1,5 @@
 <?php
+
 use Mockery as m;
 use Illuminate\Foundation\Testing\WithoutMiddleware;
 
@@ -45,7 +46,7 @@ class MessageTest extends TestCase
      */
     public function testReturnsInitialMessagesInCorrectFormat()
     {
-        $messages = factory(Chatty\Message::class, 20)->create();
+        $messages = factory(Chatty\Message::class, 20)->make();
 
         $this->messages->shouldReceive('orderBy')
             ->once()
@@ -90,7 +91,7 @@ class MessageTest extends TestCase
             'username' => 'foo',
             'message'  => 'bar'
         ];
-        $message = factory(Chatty\Message::class)->create($input);
+        $message = factory(Chatty\Message::class)->make($input);
 
         $this->request
             ->shouldReceive('input')
