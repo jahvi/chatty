@@ -1,30 +1,30 @@
 /* global angular, Pusher, chattyConfig */
 
 angular.module('chatty')
-    .factory('channelManager', function($pusher, $sessionStorage) {
-        var channel;
+    .factory('channelManager', channelManager);
 
-        return {
-            subscribe: function (channelName) {
-                var client = new Pusher(chattyConfig.PUSHER_KEY, {
-                    encrypted: true,
-                    auth: {
-                        headers: {
-                            'X-CSRF-Token': chattyConfig.token
-                        },
-                        params: {
-                            username: $sessionStorage.username
-                        }
+function channelManager($pusher, $sessionStorage) {
+    return {
+        subscribe(channelName) {
+            let client = new Pusher(chattyConfig.PUSHER_KEY, {
+                encrypted: true,
+                auth: {
+                    headers: {
+                        'X-CSRF-Token': chattyConfig.token
+                    },
+                    params: {
+                        username: $sessionStorage.username
                     }
-                });
+                }
+            });
 
-                var pusher = $pusher(client);
-                channel = pusher.subscribe(channelName);
+            let pusher = $pusher(client);
+            this.channel = pusher.subscribe(channelName);
 
-                return channel;
-            },
-            getMembersCount: function () {
-                return channel.members.count;
-            }
-        };
-    });
+            return this.channel;
+        },
+        getMembersCount() {
+            return this.channel.members.count;
+        }
+    };
+}
