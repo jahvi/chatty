@@ -35,7 +35,6 @@ class MessageTest extends TestCase
         $this->request  = m::mock(Illuminate\Http\Request::class);
 
         $this->app->instance(Chatty\Message::class, $this->messages);
-
         $this->app->instance(Illuminate\Http\Request::class, $this->request);
     }
 
