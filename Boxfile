@@ -33,3 +33,7 @@ web1:
     laravel[error]: 'storage/logs/laravel.log'
   before_deploy:
     - 'php artisan migrate --no-interaction --force'
+
+worker1:
+  type: php
+  exec: 'php artisan queue:listen'
