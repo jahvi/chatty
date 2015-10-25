@@ -5,7 +5,7 @@ global:
 build:
   exec:
     - 'composer install --no-interaction --prefer-source --no-dev'
-    - 'npm install --production --quiet'
+    - 'npm install --production'
   after_exec:
     - 'composer dump-autoload --optimize'
     - 'node_modules/.bin/gulp --production'
