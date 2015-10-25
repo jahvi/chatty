@@ -1,7 +1,7 @@
 /* global angular */
 
 angular.module('chatty')
-    .controller('Chat', chatController);
+    .controller('Chat', ['$scope', '$http', '$sessionStorage', '$filter', 'channelManager', 'focus', chatController]);
 
 function chatController($scope, $http, $sessionStorage, $filter, channelManager, focus) {
     this.sessionStorage = $sessionStorage;

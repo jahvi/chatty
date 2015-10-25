@@ -1,7 +1,7 @@
 /* global angular, Pusher, chattyConfig */
 
 angular.module('chatty')
-    .factory('channelManager', channelManager);
+    .factory('channelManager', ['$pusher', '$sessionStorage', channelManager]);
 
 function channelManager($pusher, $sessionStorage) {
     return {
