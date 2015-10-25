@@ -5,10 +5,13 @@ global:
 build:
   exec:
     - 'composer install --no-interaction --prefer-source --no-dev'
+    - 'npm install'
   after_exec:
     - 'composer dump-autoload --optimize'
+    - 'node_modules/.bin/gulp --production'
   lib_dirs:
     - vendor
+    - node_modules
   reuse_libs: true
 
 web1:
