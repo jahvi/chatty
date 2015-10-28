@@ -11,8 +11,8 @@ A simple chat app build with Laravel, Pusher and AngularJS
 1. Clone repo
 2. Install composer dependencies (`composer install`)
 3. Install node dependencies (`npm install`)
-4. Run migrations (`php artisan migrate`)
 5. Create `.env` file with environment variables, you can use [.env.example](https://github.com/jahvi/chatty/blob/master/.env.example) for reference
+5. Run migrations (`php artisan migrate`)
 6. Run the app using `php artisan serve` or your prefered web server
 
 ### Roadmap
