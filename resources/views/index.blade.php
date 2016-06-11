@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chatty | A simple chat app build with Laravel, Pusher and AngularJS</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
     <div class="container" ng-controller="Chat as chat">
@@ -109,6 +109,6 @@
             PUSHER_KEY: "{{ config('broadcasting.connections.pusher.key') }}"
         };
     </script>
-    <script src="{{ asset('js/all.js') }}"></script>
+    <script src="/js/all.js"></script>
 </body>
 </html>
