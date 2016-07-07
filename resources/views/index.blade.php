@@ -12,7 +12,7 @@
             <aside class="three wide column info-column">
                 <h1>Chatty</h1>
                 <p>
-                    Simple chat app build with Laravel, Pusher and AngularJS.
+                    Simple chat app built with Laravel, Pusher and AngularJS.
                 </p>
                 <p>
                     There's a lot of room for improvement so feel free to submit pull requests.

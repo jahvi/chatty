@@ -1,6 +1,6 @@
 ## Chatty
 
-A simple chat app build with Laravel, Pusher and AngularJS
+A simple chat app built with Laravel, Pusher and AngularJS
 
 ![Chatty UI](http://i.imgur.com/wSTlSJk.jpg)
 
